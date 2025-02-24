@@ -12,7 +12,11 @@ const app = express();
 const port = 3001;
 
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.HOST_URL,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 app.use(bodyParser.json());
 
