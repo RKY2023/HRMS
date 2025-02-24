@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
+    "start-server": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RKY2023/HRMS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "bugs": {
+    "url": "https://github.com/RKY2023/HRMS/issues"
+  },
+  "homepage": "https://github.com/RKY2023/HRMS#readme",
+  "dependencies": {
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
