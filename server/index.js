@@ -1,8 +1,33 @@
+const path = require("path");
 const express = require("express");
+const cors = require('cors');
+
+require('dotenv').config();
+
+const connectDB = require("./utils/database")();
+const bodyParser = require("body-parser");
+const authRoutes = require("./routes/authRoutes");
 const app = express();
 
-app.get("/", (req, res) => res.send("Express on Vercel"));
+const port = 3001;
 
-app.listen(3000, () => console.log("Server ready on port 3000."));
+
+app.use(cors());
+
+app.use(bodyParser.json());
+
+const WelcomeToExpress = (req, res) => {
+    res.send("Express on Vercel");
+  };
+// routes
+app.get("/", WelcomeToExpress);
+app.use("/auth", authRoutes);
+
+
+connectDB.then(() => {
+    app.listen(port, () => console.log(`Server ready on port ${port}.`));
+}).catch((err) => {
+    console.log(err);
+});
 
 module.exports = app;
