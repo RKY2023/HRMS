@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import axios from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 const Auth = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -15,6 +18,7 @@ const Auth = () => {
     }
 
     const authData = {
+      name: name,
       email: email,
       password: password,
     };
@@ -26,12 +30,19 @@ const Auth = () => {
       const data = response.data;
       if (data.success) {
         alert(`${isLogin ? 'Login' : 'Signup'} successful`);
+        localStorage.setItem('token', data.token);
+        navigate('/employee-dashboard');
       } else {
         alert(`${isLogin ? 'Login' : 'Signup'} failed: ` + data.message);
       }
     } catch (error) {
       console.error('Error:', error);
-      alert(`${isLogin ? 'Login' : 'Signup'} failed: ` + error.message);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+        alert(`${isLogin ? 'Login' : 'Signup'} failed: ` + error.response.data.message);
+      } else {
+        alert(`${isLogin ? 'Login' : 'Signup'} failed: ` + error.message);
+      }
     }
   };
 
@@ -40,6 +51,17 @@ const Auth = () => {
       <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6">{isLogin ? 'Login' : 'Signup'}</h1>
         <form onSubmit={handleSubmit}>
+          {!isLogin && <div className="mb-4">
+            <label className="block text-gray-700">Name:</label>
+            <input
+              type="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full px-3 py-2 border rounded"
+            />
+          </div>
+          }
           <div className="mb-4">
             <label className="block text-gray-700">Email:</label>
             <input

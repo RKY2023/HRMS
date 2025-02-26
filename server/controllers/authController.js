@@ -1,29 +1,29 @@
-const User = require('../models/user');
+const Employee = require('../models/employee');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const authController = {
     signup: async (req, res) => {
         try {
-            const { name:username, email, password } = req.body;
+            const { name, email, password } = req.body;
 
-            // Check if user already exists
-            let user = await User.findOne({ email });
-            if (user) {
-                return res.status(400).json({ message: 'User already exists' });
+            // Check if employee already exists
+            let employee = await Employee.findOne({ email });
+            if (employee) {
+                return res.status(409).json({ message: 'Employee already exists' });
             }
 
-            // Create new user
-            user = new User({
-                username,
+            // Create new employee
+            employee = new Employee({
+                name,
                 email,
                 password: await bcrypt.hash(password, 10)
             });
 
-            await user.save();
+            await employee.save();
 
             // Generate JWT token
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            const token = jwt.sign({ id: employee._id }, process.env.JWT_SECRET, {
                 expiresIn: '1h'
             });
 
@@ -37,21 +37,22 @@ const authController = {
     login: async (req, res) => {
         try {
             const { email, password } = req.body;
+            console.log(email);
 
-            // Check if user exists
-            const user = await User.findOne({ email });
-            if (!user) {
-                return res.status(400).json({ message: 'Invalid credentials' });
+            // Check if employee exists
+            const employee = await Employee.findOne({ email });
+            if (!employee) {
+                return res.status(404).json({message: 'User not found' }); 
             }
 
             // Validate password
-            const isMatch = await bcrypt.compare(password, user.password);
+            const isMatch = await bcrypt.compare(password, employee.password);
             if (!isMatch) {
-                return res.status(400).json({ message: 'Invalid credentials' });
+                return res.status(401).json({ message: 'Invalid credentials' });
             }
 
             // Generate JWT token
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            const token = jwt.sign({ id: employee._id }, process.env.JWT_SECRET, {
                 expiresIn: '1h'
             });
 
@@ -64,14 +65,14 @@ const authController = {
         try {
             const token = req.header("Authorization").replace("Bearer ", "")
             const decoded = jwt.verify(token, process.env.JWT_SECRET)
-            const user = await User.findOne({ _id: decoded.id })
+            const employee = await Employee.findOne({ _id: decoded.id })
         
-            if (!user) {
+            if (!employee) {
               throw new Error()
             }
         
             req.token = token
-            req.user = user
+            req.employee = employee
             next()
         } catch (error) {
             res.status(401).send({ message: "Please authenticate" })

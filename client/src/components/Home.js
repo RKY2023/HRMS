@@ -16,6 +16,10 @@ const Home = () => {
   return (
     <div>
       <h1>Welcome to HRMS</h1>
+      <div className='flex justify-center'>
+        <img src='hrms.jpg' alt='HRMS' />
+        
+      </div>
     </div>
   );
 };

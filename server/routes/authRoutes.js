@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Signup route
 router.post('/signup', authController.signup);
-console.log('here')
+
 // Login route
 router.post('/login', authController.login);
 
