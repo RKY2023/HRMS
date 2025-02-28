@@ -7,7 +7,7 @@ const Home = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/auth');
+      navigate('/login');
     } else {
       navigate('/employee-dashboard');
     }

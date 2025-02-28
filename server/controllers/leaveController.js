@@ -4,7 +4,8 @@ const Employee = require('../models/employee');
 const leaveController = {
   submitLeaveRequest: async (req, res) => {
     try {
-      const { employeeId, leaveType, startDate, endDate, reason } = req.body;
+      const { leaveType, startDate, endDate, reason } = req.body;
+      const employeeId = req.employee._id;
 
       // Validate dates
       if (new Date(startDate) > new Date(endDate)) {
@@ -37,6 +38,44 @@ const leaveController = {
       res.status(201).json({ success: true, leaveRequest });
     } catch (err) {
       console.error('Error submitting leave request:', err);
+      res.status(500).json({ status: err?.status || 500, message: err?.message || err });
+    }
+  },
+
+  getUpcomingLeaves: async (req, res) => {
+    try {
+      const upcomingLeaves = await LeaveRequest.find({
+        startDate: { $gte: new Date() },
+      }).populate('employeeId', 'name');
+
+      const formattedLeaves = upcomingLeaves.map(leave => ({
+        ...leave._doc,
+        startDate: leave.startDate.toISOString().split('T')[0],
+        endDate: leave.endDate.toISOString().split('T')[0],
+        employeeName: leave.employeeId.name,
+      }));
+
+      res.status(200).json(formattedLeaves);
+    } catch (err) {
+      console.error('Error fetching upcoming leaves:', err);
+      res.status(500).json({ status: err?.status || 500, message: err?.message || err });
+    }
+  },
+
+  getAllLeaves: async (req, res) => {
+    try {
+      const allLeaves = await LeaveRequest.find().populate('employeeId', 'name');
+
+      const formattedLeaves = allLeaves.map(leave => ({
+        ...leave._doc,
+        startDate: leave.startDate.toISOString().split('T')[0],
+        endDate: leave.endDate.toISOString().split('T')[0],
+        employeeName: leave.employeeId.name,
+      }));
+
+      res.status(200).json(formattedLeaves);
+    } catch (err) {
+      console.error('Error fetching all leaves:', err);
       res.status(500).json({ status: err?.status || 500, message: err?.message || err });
     }
   },

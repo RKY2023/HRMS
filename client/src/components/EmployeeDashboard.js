@@ -1,56 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../api/axios';
+import { useNavigate } from 'react-router-dom';
 
 const EmployeeDashboard = () => {
-  const [employees, setEmployees] = useState([]);
+  const navigate = useNavigate();
+  const [employee, setEmployee] = useState(null);
   const [upcomingLeaves, setUpcomingLeaves] = useState([]);
-  const [upcomingShifts, setUpcomingShifts] = useState([]);
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchEmployeeDetails = async () => {
       try {
-        const response = await axios.get('/employees');
-        setEmployees(response.data);
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/auth/employeeDetails', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setEmployee(response.data);
       } catch (error) {
-        console.error('Error fetching employees:', error);
+        console.error('Error fetching employee details:', error);
       }
     };
 
     const fetchUpcomingLeaves = async () => {
+      const token = localStorage.getItem('token');
       try {
-        const response = await axios.get('/leaves/upcoming');
+        const response = await axios.get('/leaves/upcoming',{
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setUpcomingLeaves(response.data);
       } catch (error) {
         console.error('Error fetching upcoming leaves:', error);
       }
     };
 
-    const fetchUpcomingShifts = async () => {
-      try {
-        const response = await axios.get('/shifts/upcoming');
-        setUpcomingShifts(response.data);
-      } catch (error) {
-        console.error('Error fetching upcoming shifts:', error);
-      }
-    };
-
-    fetchEmployees();
+    fetchEmployeeDetails();
     fetchUpcomingLeaves();
-    fetchUpcomingShifts();
   }, []);
+
+  const handleLeaveRequest = () => {
+    navigate('/leave-management');
+  };
 
   return (
     <div>
-      <h1>Employee Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {employees.map((employee) => (
-          <div key={employee.id} className="bg-white p-4 rounded shadow-md">
-            <h2 className="text-xl font-bold">{employee.name}</h2>
-            <p>Department: {employee.department}</p>
-            <p>Contact: {employee.contact}</p>
-          </div>
-        ))}
-      </div>
+      {employee && (
+        <div className="bg-white p-4 rounded shadow-md mb-4">
+          <h2 className="text-xl font-bold">{employee.name}</h2>
+          <p>Email: {employee.email}</p>
+          <p>Department: {employee.department}</p>
+          <p>Contact: {employee.contact}</p>
+          <p>Reporting Manager: {employee.reportingManager}</p>
+        </div>
+      )}
       <h2 className="text-2xl font-bold mt-8">Upcoming Leaves</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {upcomingLeaves.map((leave) => (
@@ -61,24 +65,16 @@ const EmployeeDashboard = () => {
           </div>
         ))}
       </div>
-      <h2 className="text-2xl font-bold mt-8">Upcoming Shifts</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {upcomingShifts.map((shift) => (
-          <div key={shift.id} className="bg-white p-4 rounded shadow-md">
-            <p>Employee: {shift.employeeName}</p>
-            <p>Shift Date: {shift.date}</p>
-            <p>Shift Time: {shift.time}</p>
-          </div>
-        ))}
-      </div>
+      
       <h2 className="text-2xl font-bold mt-8">Quick Access</h2>
       <div className="flex justify-around mt-4">
-        <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
+          onClick={handleLeaveRequest}
+        >
           Request Leave
         </button>
-        <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200">
-          Submit Timesheet
-        </button>
+
       </div>
     </div>
   );

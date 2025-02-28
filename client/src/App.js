@@ -2,10 +2,11 @@ import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import EmployeeDashboard from './components/EmployeeDashboard';
 import NavBar from './components/NavBar';
-import Auth from './components/Auth';
 import Home from './components/Home';
 import LeaveManagement from './components/LeaveManagement';
 import EmployeeDirectory from './components/EmployeeDirectory';
+import Login from './components/Login';
+import Signup from './components/Signup';
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/leave-management" element={<LeaveManagement />} />
           <Route path="/employee-directory" element={<EmployeeDirectory />} />
         </Routes>

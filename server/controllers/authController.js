@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const authController = {
     signup: async (req, res) => {
         try {
-            const { name, email, password } = req.body;
+            const { name, email, password, department, contact, reportingManager } = req.body;
 
             // Check if employee already exists
             let employee = await Employee.findOne({ email });
@@ -17,7 +17,10 @@ const authController = {
             employee = new Employee({
                 name,
                 email,
-                password: await bcrypt.hash(password, 10)
+                password: await bcrypt.hash(password, 10),
+                department,
+                contact,
+                reportingManager
             });
 
             await employee.save();
@@ -76,6 +79,17 @@ const authController = {
             next()
         } catch (error) {
             res.status(401).send({ message: "Please authenticate" })
+        }
+    },
+    getEmployeeDetails: async (req, res) => {
+        try {
+            const employee = await Employee.findById(req.employee._id);
+            if (!employee) {
+                return res.status(404).json({ message: 'Employee not found' });
+            }
+            res.status(200).json(employee);
+        } catch (err) {
+            res.status(500).json({ status: err?.status || 500, message: err?.message || err });
         }
     }
 };

@@ -5,8 +5,9 @@ const cors = require('cors');
 require('dotenv').config();
 
 const connectDB = require("./utils/database")();
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const authRoutes = require("./routes/authRoutes");
+const leaveRoutes = require("./routes/leaveRoutes");
 const app = express();
 
 const port = 3001;
@@ -18,7 +19,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 const WelcomeToExpress = (req, res) => {
     res.send("Express on Vercel");
@@ -26,6 +27,7 @@ const WelcomeToExpress = (req, res) => {
 // routes
 app.get("/", WelcomeToExpress);
 app.use("/auth", authRoutes);
+app.use("/leaves", leaveRoutes);
 
 
 connectDB.then(() => {
